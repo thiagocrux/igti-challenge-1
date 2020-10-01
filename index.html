@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <!-- Compiled and minified CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+    />
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <link rel="stylesheet" href="style.css" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div class="container">
+      <div id="header" class="row">
+        <div class="input-field">
+          <input
+            id="search-input"
+            class="col s11"
+            type="text"
+            placeholder="Pesquise aqui..."
+          />
+          <button
+            id="search-button"
+            class="btn-large btn-floating waves-effect waves-light right"
+          >
+            <i class="material-icons">search</i>
+          </button>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <p id="TESTE"></p>
+
+      <div id="main"">
+        <div id="users-container">
+          <p id="users-message" class="message">Nenhum usuário filtrado!</p>
+          <div id="users-display">
+            <!-- Os usuários serão inseridos aqui -->
+          </div>
+        </div>
+
+        <div id="statistics-container">
+          <p id="statistics-message" class="message">Nenhuma estatística a ser exibida!</p>
+          <div id="statistics-display">
+            <!-- As estatísticas serão inseridas aqui -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
