@@ -1,88 +1,116 @@
 window.addEventListener('load', () => {
-  const searchInput = document.querySelector('#search-input');
-  const usersMessage = document.querySelector('#users-message');
-  const statisticsContainer = document.querySelector('#statistics-container');
-  const statisticsMessage = document.querySelector('#statistics-message');
-  const statisticsPanel = document.querySelector('#statistics-display');
-  const usersPanel = document.querySelector('#users-display');
+	const searchInput = document.querySelector('#search-input');
+	const searchButton = document.querySelector('#search-button');
+	const statisticsPanel = document.querySelector('#statistics-display');
+	const usersPanel = document.querySelector('#users-display');
 
-  /* Buscar os dados da API via requisição HTTP GET  */
-  const getUsersFromAPI = async () => {
-    const response = await fetch(
-      'https://randomuser.me/api/?seed=javascript&results=100&nat=BR&noinfo',
-    );
-    const data = await response.json();
-    return data.results;
-  };
+	/* Busca os dados da API via requisição HTTP GET  */
+	const getUsersFromAPI = async () => {
+		const dataFetchedFromAPI = await fetch(
+			'https://randomuser.me/api/?seed=javascript&results=100&nat=BR&noinfo'
+		);
+		const dataConvertedToJSON = await dataFetchedFromAPI.json();
+		return dataConvertedToJSON.results;
+	};
 
-  /* Renderiza os usuários e estatísticas na interface de usuáirio */
-  const renderContent = async (inputValue) => {
-    let stats = {
-      males: 0,
-      females: 0,
-      agesSum: 0,
-    };
+	/* Renderiza os usuários e estatísticas na interface de usuário */
+	const renderContentToUI = async (inputValue) => {
+		let stats = {
+			males: 0,
+			females: 0,
+			agesSum: 0,
+		};
 
-    // Pegando a lista de usuários da API
-    const allUsers = await getUsersFromAPI();
+		// Recebe a lista de usuários da API
+		const usersFromAPI = await getUsersFromAPI();
 
-    /* Formatando a lista de usuários */
-    const users = [...allUsers].map((user) => {
-      return {
-        name: user.name.first + ' ' + user.name.last,
-        gender: user.gender,
-        age: user.dob.age,
-        avatar: user.picture.large,
-      };
-    });
+		/* Formatando a lista de usuários */
+		const users = [...usersFromAPI].map((user) => {
+			return {
+				name: user.name.first + ' ' + user.name.last,
+				gender: user.gender,
+				age: user.dob.age,
+				avatar: user.picture.large,
+			};
+		});
 
-    /* Filtrando a lista de usuários a partir do valor do input */
-    const filteredUsers = users.filter((user) => {
-      let name = user.name.toLowerCase();
+		const clearStatisticsFromUI = () => {
+			statisticsPanel.innerHTML = '';
+		};
 
-      if (name.includes(inputValue.toLowerCase())) {
-        return user;
-      }
-    });
+		const clearUsersFromUI = () => {
+			usersPanel.innerHTML = '';
+		};
 
-    /* Renderizando a lista de usuários filtrados na interface de usuário */
-    usersMessage.innerHTML = `${filteredUsers.length} usuário(s) encontrado(s)`;
-    usersPanel.innerHTML = '';
+		/* Filtrando a lista de usuários a partir do valor do input */
+		const filteredUsers = users.filter((user) => {
+			let name = user.name.toLowerCase();
 
-    filteredUsers.forEach((user) => {
-      user.gender === 'male' ? stats.males++ : stats.females++;
-      stats.agesSum += user.age;
+			if (name.includes(inputValue.toLowerCase())) {
+				return user;
+			}
+		});
 
-      usersPanel.insertAdjacentHTML(
-        'beforeend',
-        `<div class="user-info">
-          <img src="${user.avatar}" />
-          <p>${user.name}, ${user.age}</p>
-        </div>`,
-      );
-    });
+		/* Renderizando as estatísticas na interface de usuário */
+		const renderStatisticsToUI = () => {
+			clearStatisticsFromUI();
+			statisticsPanel.insertAdjacentHTML(
+				'beforeend',
+				`<p id="heading">ESTATÍSTICAS</p>
+					<p class="message">${filteredUsers.length} usuário(s) encontrado(s)</p>
+					<div id="statistics">
+						<div>
+							<p>Número de homens</p> <span>${stats.males}</span>
+						</div>
+						<div>
+							<p>Número de mulheres</p> <span>${stats.females}</span>
+						</div>
+						<div>
+							<p>Soma das idades</p> <span>${stats.agesSum}</span>
+						</div>
+						<div>
+							<p>Média das idades</p> <span>${(stats.agesSum / filteredUsers.length).toFixed(1)}</span>
+						</div>
+					</div>`
+			);
+		};
 
-    /* Renderizando as estatísticas na interface de usuário */
-    statisticsMessage.innerHTML = 'Estatísticas';
-    statisticsPanel.innerHTML = '';
+		/* Renderizando a lista de usuários filtrados na interface de usuário */
+		const renderUsersToUI = () => {
+			clearUsersFromUI();
+			filteredUsers.forEach((user) => {
+				user.gender === 'male' ? stats.males++ : stats.females++;
+				stats.agesSum += user.age;
+				usersPanel.insertAdjacentHTML(
+					'beforeend',
+					`<div class="user-info">
+						<img src="${user.avatar}" />
+						<div>
+							<p>${user.name}</p>
+							<p>${user.age} anos</p>
+						</div>
+					</div>`
+				);
+			});
+			renderStatisticsToUI();
+		};
 
-    statisticsPanel.insertAdjacentHTML(
-      'beforeend',
-      `<div id="statistics">
-        <p>Quantidade de homens: ${stats.males}</p>
-        <p>Quantidade de mulheres: ${stats.females}</p>
-        <p>Soma das idades: ${stats.agesSum} anos</p>
-        <p>Média das idades: ${stats.agesSum / filteredUsers.length} anos</p>
-      </div>`,
-    );
-  };
+		renderUsersToUI();
+	};
 
-  /* **** EVENT LISTENERS **** */
+	/* **** EVENT LISTENERS **** */
 
-  /* Caixa de pesquisa */
-  searchInput.addEventListener('change', () => {
-    let inputValue = searchInput.value.toLowerCase();
-    renderContent(inputValue);
-    searchInput.focus();
-  });
+	/* Caixa de pesquisa */
+	searchInput.addEventListener('change', () => {
+		let inputValue = searchInput.value;
+		renderContentToUI(inputValue);
+		searchInput.focus();
+	});
+
+	/* Botão de pesquisa */
+	searchButton.addEventListener('click', () => {
+		let inputValue = searchInput.value;
+		renderContentToUI(inputValue);
+		searchInput.focus();
+	});
 });
